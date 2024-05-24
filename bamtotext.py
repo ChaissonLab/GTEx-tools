@@ -4,6 +4,7 @@ import pysam
 import argparse
 import os
 
+
 def main(args):
 	
 	inputfile = args.input
