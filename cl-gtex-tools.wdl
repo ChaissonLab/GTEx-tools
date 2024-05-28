@@ -44,7 +44,7 @@ task  bamToText {
     >>>
 
     output {
-        File out_txt = "~{sample}.txt.gz"
+        File out_txt = "~{sample}.tar.gz"
     }
 
     runtime {
