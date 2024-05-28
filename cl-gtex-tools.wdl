@@ -48,7 +48,7 @@ task  bamToText {
     }
 
     runtime {
-        docker: "mchaisso/cl-gtex-tools:v1"
+        docker: "mchaisso/cl-gtex-tools:v2"
         cpu: taskCpu
         memory: taskMem+"GB"
 	disks: "local-disk " + taskDiskSizeGb + " LOCAL"
