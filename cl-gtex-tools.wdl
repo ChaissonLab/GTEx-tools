@@ -40,7 +40,7 @@ task  bamToText {
     }
 
     command <<<
-        bamtotext.py -i ~{bam} -o ~{sample}
+        bamtotext.py -i ~{bam}  -o ~{sample}
     >>>
 
     output {
