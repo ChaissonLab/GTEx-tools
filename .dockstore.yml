@@ -1,6 +1,6 @@
 version: 1.2
 workflows:
   - subclass: WDL
-    primaryDescriptorPath: cl-gtex-tools.wdl
+    primaryDescriptorPath: /cl-gtex-tools.wdl
     authors:
       - orcid: 0000-0001-5395-1457
