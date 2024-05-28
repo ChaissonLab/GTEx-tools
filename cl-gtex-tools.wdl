@@ -11,7 +11,6 @@ workflow bamtotxt {
 	Int cpu
         Int mem
 	Int diskSizeGb
-	String mode
     }
 
     call bamToText {
@@ -22,7 +21,6 @@ workflow bamtotxt {
 	taskCpu = cpu,
 	taskMem = mem,
 	taskDiskSizeGb = diskSizeGb,
-	taskMode = mode
     }
 
     output {
