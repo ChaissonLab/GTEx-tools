@@ -3,4 +3,4 @@ workflows:
   - subclass: WDL
     primaryDescriptorPath: cl-gtex-tools.wdl
     authors:
-      - orcid: 0000-0001-8575-997X
+      - orcid: 0000-0001-5395-1457
