@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
 
         // Extract information
         int32_t tid = alignment->core.tid;
+	if (tid == -1) { continue;}
         int32_t pos = alignment->core.pos + 1; // 1-based position
         uint32_t mapq = alignment->core.qual;
 	int flag=(int) alignment->core.flag;
