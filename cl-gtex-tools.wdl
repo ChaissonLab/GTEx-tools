@@ -40,15 +40,15 @@ task  bamToText {
     }
 
     command <<<
-        bamtotext.py -i ~{bam}  -o ~{sample}
+        ConvertBam ~{bam} | bgzip -c >  ~{sample}.tab.gz
     >>>
 
     output {
-        File out_txt = "~{sample}.tar.gz"
+        File out_txt = "~{sample}.tab.gz"
     }
 
     runtime {
-        docker: "mchaisso/cl-gtex-tools:v2"
+        docker: "mchaisso/cl-gtex-tools:v3"
         cpu: taskCpu
         memory: taskMem+"GB"
 	disks: "local-disk " + taskDiskSizeGb + " LOCAL"
