@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <htslib/sam.h>
+using namespace std;
+#include <string>
+#include <sstream>
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -19,7 +22,13 @@ int main(int argc, char *argv[]) {
     // Initialize bam header and alignment record
     bam_hdr_t *bam_header = sam_hdr_read(bam_file);
     bam1_t *alignment = bam_init1();
-
+    string prevChrom="";
+    string prevCigar="";
+    int prevPos=-1;
+    int prevScore=-1;
+    int prevFlag=-1;
+    int prevMapQV=-1;
+    
     // Read and process each alignment
     while (sam_read1(bam_file, bam_header, alignment) >= 0) {
         // Skip secondary alignments
@@ -29,8 +38,10 @@ int main(int argc, char *argv[]) {
         int32_t tid = alignment->core.tid;
         int32_t pos = alignment->core.pos + 1; // 1-based position
         uint32_t mapq = alignment->core.qual;
+	int flag=(int) alignment->core.flag;
 	uint8_t *as_aux = bam_aux_get(alignment, "AS");
         int32_t score = 0;
+
         if (as_aux) {
             score = bam_aux2i(as_aux);
         } else {
@@ -39,18 +50,47 @@ int main(int argc, char *argv[]) {
 
         uint32_t *cigar = bam_get_cigar(alignment);
         int n_cigar = alignment->core.n_cigar;
-
+	string cigarStr;
+	stringstream strm;
+	for (int i = 0; i < n_cigar; ++i) {
+            char cigar_op = bam_cigar_opchr(bam_cigar_op(cigar[i]));
+            int cigar_len = bam_cigar_oplen(cigar[i]);
+            strm << cigar_len << cigar_op;
+        }
+	cigarStr = strm.str();
         // Retrieve chromosome name
-        const char *chrom_name = bam_header->target_name[tid];
+        string chrom_name(bam_header->target_name[tid]);
 
         // Print extracted information
-        printf("%s\t%d\t%d\t%d\t", chrom_name, pos, score, mapq);
-        for (int i = 0; i < n_cigar; ++i) {
-            int cigar_op = bam_cigar_op(cigar[i]);
-            int cigar_len = bam_cigar_oplen(cigar[i]);
-            printf("%d%c", cigar_len, bam_cigar_opchr(cigar_op));
-        }
-        printf("\n");
+
+	if (prevChrom != chrom_name) {
+	  printf("%s\t%d\t%d\t%s\t%d\t%d\n", chrom_name.c_str(), pos, mapq, cigarStr.c_str(), score, flag);
+	}
+	else if (prevPos != pos) {
+	  printf("%d\t%d\t%s\t%d\t%d\n", pos, mapq, cigarStr.c_str(), score, flag);
+	}	
+	else if (prevMapQV != mapq) {
+	  printf("%d\t%s\t%d\t%d\n", mapq, cigarStr.c_str(), score, flag);
+	}
+	else if (prevCigar != cigarStr) {
+	  printf("%s\t%d\t%d\n", cigarStr.c_str(), score, flag);
+	}
+	else if (prevScore != score) {
+	  printf("%d\t%d\n", score, flag);
+	}
+	else if (prevFlag != flag) {
+	  printf("%d\n", flag);
+	}
+	else {
+	  printf("\n");
+	}
+	
+	prevChrom = chrom_name;
+	prevPos = pos;
+	prevScore = score;
+	prevMapQV=mapq;
+	prevCigar=cigarStr;
+	prevFlag=flag;
     }
 
     // Clean up
